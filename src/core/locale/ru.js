@@ -1,5 +1,5 @@
 export default {
   // roles
-  base: 'Базовый',
-  admin: 'Администратор',
-}
+  base: "Базовый",
+  admin: "Администратор"
+};

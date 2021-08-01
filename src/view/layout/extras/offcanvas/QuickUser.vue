@@ -147,30 +147,30 @@ export default {
           desc: "Due in 2 Days",
           alt: "+28%",
           svg: "media/svg/icons/Home/Library.svg",
-          type: "warning",
+          type: "warning"
         },
         {
           title: "Would be to people",
           desc: "Due in 2 Days",
           alt: "+50%",
           svg: "media/svg/icons/Communication/Write.svg",
-          type: "success",
+          type: "success"
         },
         {
           title: "Purpose would be to persuade",
           desc: "Due in 2 Days",
           alt: "-27%",
           svg: "media/svg/icons/Communication/Group-chat.svg",
-          type: "danger",
+          type: "danger"
         },
         {
           title: "The best product",
           desc: "Due in 2 Days",
           alt: "+8%",
           svg: "media/svg/icons/General/Attachment2.svg",
-          type: "info",
-        },
-      ],
+          type: "info"
+        }
+      ]
     };
   },
   mounted() {
@@ -183,7 +183,7 @@ export default {
     },
     closeOffcanvas() {
       new KTOffcanvas(KTLayoutQuickUser.getElement()).hide();
-    },
+    }
   },
   computed: {
     ...mapGetters(["user", "getUserRoleNames"]),
@@ -192,7 +192,7 @@ export default {
       if (!this.user.data) return "";
       if (this.user.data.name) return this.user.data.name;
       return this.user.login;
-    },
-  },
+    }
+  }
 };
 </script>

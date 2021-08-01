@@ -47,19 +47,19 @@ export default {
   data() {
     return {
       readonly: true,
-      data: {},
+      data: {}
     };
   },
   computed: {
     disabled() {
       return this.readonly || !this.data.name;
-    },
+    }
   },
   methods: {
     init() {
-      api.getObjects().then((resp) => {
+      api.getObjects().then(resp => {
         const currentObject = resp.data.find(
-          (obj) => obj.id === this.$route.params.id
+          obj => obj.id === this.$route.params.id
         );
         this.data = currentObject;
       });
@@ -73,11 +73,11 @@ export default {
           this.$router.push({ name: "points" });
         })
         .catch(() => alert("Ошибка сервера"));
-    },
+    }
   },
   created() {
     this.init();
-  },
+  }
 };
 </script>
 

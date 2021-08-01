@@ -1,93 +1,102 @@
 <template>
-  <div>
-    <v-card>
-      <v-card-text>
-        <v-file-input
-          accept="image/*"
-          label="Загрузите схему"
-          @change="uploadFile"
-        ></v-file-input>
-        <v-img :src="image" max-width="800"></v-img>
-      </v-card-text>
+  <div class="card card-custom card-sticky" id="kt_page_sticky_card">
+    <div class="card-header" style="">
+      <div class="card-title">
+        <h3 class="card-label">
+          Схема размещения датчиков и оборудования <i class="mr-2"></i>
+          <small v-if="point.data"
+            >{{ point.name }} | {{ point.data.inspection.address }}</small
+          >
+        </h3>
+      </div>
+      <div class="card-toolbar">
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn btn-primary font-weight-bolder"
+            @click="onSave"
+            :disabled="disabled"
+          >
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" v-if="point.data">
+      <v-file-input
+        accept="image/*"
+        label="Загрузите схему"
+        @change="uploadFile"
+      ></v-file-input>
+      <v-img :src="image" max-width="800"></v-img>
 
-      <v-card-text
-        v-for="(value, key, i) in spec"
-        :key="i"
-        class="mb-2"
-        v-show="isShowenField(key)"
-      >
-        <h3 class="text-h6 mb-4">{{ getSpecName(key) }}</h3>
-        <v-simple-table>
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th v-for="(col, i) in columns" :key="i" class="text-left">
-                  {{ getColumnLabel(col) }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(data, i) in value" :key="i">
-                <td v-for="(col, idx) in columns" :key="idx">
-                  <span v-if="col !== 'cipher' && col !== 'serial'">{{
-                    data[col]
-                  }}</span>
-                  <v-text-field
-                    v-else
-                    v-model="data[col]"
-                    hide-details="auto"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-btn @click="onSave" color="primary" width="160" :disabled="disabled">
-          Далее
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+      <div v-for="(spec, i) in specs" :key="i">
+        <TableAdd
+          :options="options"
+          :columns="columns"
+          :title="spec.title"
+          ref="tableAdd"
+          readonly
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import api from "@/api";
-import specs from "@/apps/points/data/specs";
-import columnLabels from "@/apps/points/data/columnLabels";
+import api from "@/core/api";
+import TableAdd from "@/view/content/TableAdd/TableAdd.vue";
+
+import { specs, specFields } from "@/view/pages/points/data/specs";
 
 export default {
+  components: { TableAdd },
   data() {
     return {
+      point: {},
       specs,
-      spec: {},
-      address: {},
-      columns: ["name", "unit", "quantity", "desc", "cipher", "serial"],
-      columnLabels,
+
+      columns: ["name", "desc", "cipher", "serial"],
+      options: {
+        columnNames: specFields,
+        grid: [3, 3, 3, 3],
+        disabled: [true, true, false, false]
+      },
+
       image: "",
       imageLink: "",
-      loading: false,
-
-      showenFields: specs.slice(0, 3),
+      loading: false
     };
   },
   computed: {
     disabled() {
       if (this.loading) return true;
-
-      // for (let key in this.spec) {
-      //   const fullfill = this.spec[key].every((el) => el.cipher && el.serial);
-      //   if (!fullfill) return true;
-      // }
-
       return false;
-    },
+    }
   },
   methods: {
-    isShowenField(key) {
-      return this.showenFields.some((el) => el.field === key);
+    onSave() {
+      const items = [];
+      const refs = this.$refs["tableAdd"];
+      for (let i = 0; i < refs.length; i++) {
+        const res = refs[i].getResult();
+        res.forEach(item => items.push(item));
+      }
+
+      this.point.data.scheme.items = items;
+      this.point.data.scheme.image = this.imageLink;
+
+      api
+        .putPoint(this.$route.params.id, this.point)
+        .then(() => {
+          const isCreateMode = this.$route.name.includes("Create");
+          if (!isCreateMode) return this.$router.push({ name: "points" });
+          this.$router.push({
+            name: "PointCreateConfiguration",
+            params: { id: this.$route.params.id }
+          });
+        })
+        .catch(() => alert("Ошибка сервера"));
     },
     uploadFile(file) {
       if (!file) {
@@ -101,57 +110,38 @@ export default {
       this.loading = true;
       api
         .uploadFile(formData)
-        .then((resp) => {
+        .then(resp => {
           this.imageLink = resp.data.file;
         })
         .finally(() => (this.loading = false));
     },
-    onSave() {
-      api
-        .setSensorSchemes({
-          data: {
-            data: this.spec,
-            image: this.imageLink,
-            status: 100,
-          },
-          object_id: this.address.id,
-        })
-        .then((resp) => {
-          localStorage.setItem("scheme", JSON.stringify(resp.data));
-          this.$router.push({ path: "/points/create/configuration" });
-        })
-        .catch(() => alert("Ошибка сервера"));
-    },
-    getColumnLabel(col) {
-      return this.columnLabels[col];
-    },
-    getSpecName(key) {
-      return this.specs.find((spec) => spec.field === key)?.title || key;
-    },
-  },
-  beforeMount() {
-    this.address = JSON.parse(localStorage.getItem("address"));
-    const spec = JSON.parse(localStorage.getItem("spec")).data.data;
+    async setTableData(items) {
+      await this.$nextTick();
+      const refs = this.$refs["tableAdd"];
 
-    const res = {};
-    for (let sp in spec) {
-      if (!spec[sp].length) continue;
+      for (let i = 0; i < refs.length; i++) {
+        const catchedItems = items.filter(
+          item => item.type === this.specs[i].type
+        );
 
-      res[sp] = [];
-      const dataArray = spec[sp];
-      dataArray.forEach((obj) => {
-        const q = parseInt(obj.quantity);
-        for (let i = 1; i <= q; i++) {
-          const newObj = Object.assign({}, obj);
-          newObj.quantity = 1;
-          newObj.cipher = "";
-          newObj.serial = "";
-          res[sp].push(newObj);
+        if (catchedItems.length) {
+          refs[i].setTableData(catchedItems);
+        } else {
+          refs[i].hide();
         }
-      });
+      }
     }
-    this.spec = res;
   },
+  mounted() {
+    api.getPoints().then(resp => {
+      this.point = resp.data.find(obj => obj.id === this.$route.params.id);
+      this.setTableData(this.point.data.scheme.items);
+      const filename = this.point.data.scheme.image;
+      if (filename) {
+        this.image = api.getFile(filename);
+      }
+    });
+  }
 };
 </script>
 

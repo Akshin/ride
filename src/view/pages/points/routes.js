@@ -1,65 +1,38 @@
-function getChildRoutes() {
+function getChildren(routeModifer) {
   return [
     {
       path: "address",
-      name: "PointAddress",
+      name: `Point${routeModifer}Address`,
       component: () =>
-        import("@/apps/points/views/PointConfig/Address/Address"),
+        import("@/view/pages/points/views/PointConfig/Address/Address")
     },
     {
       path: "act",
-      name: "PointAct",
-      component: () => import("@/apps/points/views/PointConfig/Act/Act"),
-    },
-    {
-      path: "scheme",
-      name: "PointScheme",
-      component: () => import("@/apps/points/views/PointConfig/Scheme/Scheme"),
+      name: `Point${routeModifer}Act`,
+      component: () => import("@/view/pages/points/views/PointConfig/Act/Act")
     },
     {
       path: "specification",
-      name: "PointSpecification",
+      name: `Point${routeModifer}Specification`,
       component: () =>
-        import("@/apps/points/views/PointConfig/Specification/Specification"),
-    },
-    {
-      path: "configuration",
-      name: "PointConfiguration",
-      component: () =>
-        import("@/apps/points/views/PointConfig/Configuration/Configuration"),
-    },
-  ];
-}
-
-function getEditChildRoutes() {
-  return [
-    {
-      path: "address",
-      name: "PointAddressEdit",
-      component: () => import("@/apps/points/views/PointEdit/Address/Address"),
-    },
-    {
-      path: "act",
-      name: "PointActEdit",
-      component: () => import("@/apps/points/views/PointEdit/Act/Act"),
+        import(
+          "@/view/pages/points/views/PointConfig/Specification/Specification"
+        )
     },
     {
       path: "scheme",
-      name: "PointSchemeEdit",
-      component: () => import("@/apps/points/views/PointEdit/Scheme/Scheme"),
-    },
-    {
-      path: "specification",
-      name: "PointSpecificationEdit",
+      name: `Point${routeModifer}Scheme`,
       component: () =>
-        import("@/apps/points/views/PointEdit/Specification/Specification"),
+        import("@/view/pages/points/views/PointConfig/Scheme/Scheme")
     },
     {
       path: "configuration",
-      name: "PointConfigurationEdit",
+      name: `Point${routeModifer}Configuration`,
       component: () =>
-        import("@/apps/points/views/PointEdit/Configuration/Configuration"),
-    },
+        import(
+          "@/view/pages/points/views/PointConfig/Configuration/Configuration"
+        )
+    }
   ];
 }
 
@@ -67,21 +40,23 @@ export default [
   {
     path: "/points",
     name: "points",
-    component: () => import("@/apps/points/views/PointList/PointList"),
-    meta: { requiresAuth: true },
+    component: () => import("@/view/pages/points/views/PointList/PointList"),
+    meta: { requiresAuth: true }
   },
   {
-    path: "/points/create",
-    name: "PointCreate",
-    component: () => import("@/apps/points/views/PointConfig/PointConfig"),
-    meta: { requiresAuth: true },
-    children: getChildRoutes(),
+    path: "/points/create/:id",
+    name: "PointConfigCreate",
+    component: () =>
+      import("@/view/pages/points/views/PointConfig/PointConfig"),
+    children: getChildren("Create"),
+    meta: { requiresAuth: true }
   },
   {
     path: "/points/edit/:id",
-    name: "pointsEdit",
-    component: () => import("@/apps/points/views/PointEdit/PointEdit"),
-    meta: { requiresAuth: true },
-    children: getEditChildRoutes(),
-  },
+    name: "PointConfig",
+    component: () =>
+      import("@/view/pages/points/views/PointConfig/PointConfig"),
+    children: getChildren("Edit"),
+    meta: { requiresAuth: true }
+  }
 ];

@@ -8,7 +8,7 @@
         p-10 p-sm-30
       "
       :style="{
-        backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: `url(${backgroundImage})`
       }"
     >
       <!-- begin:: Content -->
@@ -31,7 +31,7 @@ export default {
   computed: {
     backgroundImage() {
       return process.env.BASE_URL + "media/error/bg1.jpg";
-    },
-  },
+    }
+  }
 };
 </script>

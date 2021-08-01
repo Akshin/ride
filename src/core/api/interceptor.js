@@ -1,11 +1,11 @@
 import axios from "axios";
-import router from "@/router";
+import router from "@/core/router";
 
 axios.interceptors.response.use(
-  function (response) {
+  function(response) {
     return response;
   },
-  function (error) {
+  function(error) {
     if (error.response.status === 403) {
       router.push({ name: "login" });
     }

@@ -75,7 +75,7 @@ export default {
 
     allowMinimize() {
       return !!this.layoutConfig("aside.self.minimize.toggle");
-    },
-  },
+    }
+  }
 };
 </script>

@@ -3,11 +3,11 @@ function formatTitle(title) {
   return `Дом на ладони [${title}]`;
 }
 
-const _getTitle = (to) => {
+const _getTitle = to => {
   const nearestWithTitle = to.matched
     .slice()
     .reverse()
-    .find((r) => r.meta && r.meta.title);
+    .find(r => r.meta && r.meta.title);
   document.title = formatTitle(nearestWithTitle?.meta?.title);
 };
 

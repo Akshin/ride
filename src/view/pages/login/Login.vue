@@ -25,8 +25,8 @@ export default {
     login() {
       const path = getReturnUrl();
       window.open(path, "_self");
-    },
-  },
+    }
+  }
 };
 </script>
 

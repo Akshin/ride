@@ -1,51 +1,72 @@
 <template>
   <div>
-    <v-stepper flat alt-labels class="transparent my-6">
-      <v-stepper-header>
-        <template v-for="(step, i) in createSteps">
-          <v-divider v-if="i !== 0" :key="'divider' + i" />
-          <v-stepper-step
-            :step="i + 1"
-            :complete="currentStep > i"
-            :key="'stepper' + i"
-            color="secondary"
-            class="caption"
-          >
-            {{ step.title }}
-          </v-stepper-step>
-        </template>
-      </v-stepper-header>
-    </v-stepper>
+    <div class="card card-custom mb-8">
+      <div class="card-body p-0">
+        <v-stepper flat alt-labels class="transparent my-6">
+          <v-stepper-header>
+            <template v-for="(step, i) in steps">
+              <v-divider v-if="i !== 0" :key="'divider' + i" />
+              <v-stepper-step
+                :step="i + 1"
+                :complete="currentStep > i"
+                :key="'stepper' + i"
+                class="caption"
+                :editable="!isCreatingMode"
+                @click="onStepClicked(step)"
+              >
+                {{ step.title }}
+              </v-stepper-step>
+            </template>
+          </v-stepper-header>
+        </v-stepper>
+      </div>
+    </div>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import { createSteps } from "@/apps/points/data/stepsToCreatePoint";
+import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
+import { steps } from "../../data/stepsToCreatePoint";
 
 export default {
   data() {
     return {
       currentStep: 0,
-      createSteps,
+      isCreatingMode: true,
+      steps
     };
   },
   methods: {
+    checkRoute(name) {
+      this.isCreatingMode = name.includes("Create");
+      this.$store.dispatch(SET_BREADCRUMB, [
+        { title: this.isCreatingMode ? "Создание ДТ" : "Редактирование ДТ" }
+      ]);
+      this.setStep(name);
+    },
     setStep(routeName) {
-      this.currentStep = createSteps.findIndex((step) => {
-        return step.route.name === routeName;
+      this.currentStep = steps.findIndex(step => {
+        return step.routes.includes(routeName);
       });
     },
+    onStepClicked(step) {
+      if (this.isCreatingMode) return;
+      this.$router.push({
+        name: step.routes[1],
+        params: { id: this.$route.params.id }
+      });
+    }
   },
   created() {
     const routeName = this.$route.name;
-    this.setStep(routeName);
+    this.checkRoute(routeName);
   },
   watch: {
     "$route.name"(routeName) {
-      this.setStep(routeName);
-    },
-  },
+      this.checkRoute(routeName);
+    }
+  }
 };
 </script>
 

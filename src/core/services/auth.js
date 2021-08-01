@@ -21,7 +21,7 @@ class Auth {
   getHeaders(multy = false) {
     const token = this.getToken();
     const config = {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     };
     if (multy) {
       config.headers["Content-Type"] = "multipart/form-data";

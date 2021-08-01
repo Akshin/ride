@@ -37,7 +37,7 @@
             <div
               :class="{
                 'container-fluid': contentFluid,
-                container: !contentFluid,
+                container: !contentFluid
               }"
             >
               <transition name="fade-in-up">
@@ -67,7 +67,7 @@ import KTScrollTop from "@/view/layout/extras/ScrollTop";
 import Loader from "@/view/content/Loader.vue";
 import {
   ADD_BODY_CLASSNAME,
-  REMOVE_BODY_CLASSNAME,
+  REMOVE_BODY_CLASSNAME
 } from "@/core/services/store/htmlclass.module.js";
 
 export default {
@@ -80,7 +80,7 @@ export default {
     KTSubheader,
     KTStickyToolbar,
     KTScrollTop,
-    Loader,
+    Loader
   },
   beforeMount() {
     // show page loading
@@ -146,7 +146,7 @@ export default {
      */
     subheaderDisplay() {
       return !!this.layoutConfig("subheader.display");
-    },
-  },
+    }
+  }
 };
 </script>

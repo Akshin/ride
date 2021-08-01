@@ -87,7 +87,7 @@ export default {
   name: "KTDropdownNotification",
   data() {
     return {
-      tabIndex: 0,
+      tabIndex: 0
     };
   },
   methods: {
@@ -104,12 +104,12 @@ export default {
 
       // set current active tab
       event.target.classList.add("active");
-    },
+    }
   },
   computed: {
     backgroundImage() {
       return process.env.BASE_URL + "media/misc/bg-1.jpg";
-    },
-  },
+    }
+  }
 };
 </script>

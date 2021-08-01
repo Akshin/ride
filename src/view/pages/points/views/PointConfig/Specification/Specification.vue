@@ -1,85 +1,131 @@
 <template>
-  <div>
-    <v-card>
-      <v-card-title> Диктующая точка - {{ address.name }} </v-card-title>
-      <v-card-subtitle v-if="address.data">
-        Адрес - {{ address.data.value }}
-      </v-card-subtitle>
-      <v-card-text>
-        <p v-if="act.data.data.hotScheme">
-          СХЕМА ТЕПЛОСНАБЖЕНИЯ - {{ act.data.data.hotScheme }}
-        </p>
-        <p v-if="act.data.data.hidroelevator">
-          НАЛИЧИЕ ГИДРОЭЛЕВАТОРА - {{ act.data.data.hidroelevator }}
-        </p>
-      </v-card-text>
-      <v-divider />
-      <v-card-text>
-        <div v-for="(spec, i) in specs" :key="i">
-          <TableAdd
-            :options="options"
-            :columns="columns"
-            :title="spec.title"
-            ref="tableAdd"
-          />
-          <v-divider class="my-2" />
+  <div class="card card-custom card-sticky" id="kt_page_sticky_card">
+    <div class="card-header" style="">
+      <div class="card-title">
+        <h3 class="card-label">
+          Схема размещения датчиков и оборудования <i class="mr-2"></i>
+          <small v-if="point.data"
+            >{{ point.name }} | {{ point.data.inspection.address }}</small
+          >
+        </h3>
+      </div>
+      <div class="card-toolbar">
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn btn-primary font-weight-bolder"
+            @click="onSave"
+            :disabled="disabled"
+          >
+            Сохранить
+          </button>
         </div>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-btn @click="onSave" color="primary" width="160"> Далее </v-btn>
-      </v-card-actions>
-    </v-card>
+      </div>
+    </div>
+    <div class="card-body" v-if="point.data">
+      <div v-for="(spec, i) in specs" :key="i">
+        <TableAdd
+          :options="options"
+          :columns="columns"
+          :title="spec.title"
+          ref="tableAdd"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import api from "@/api";
-import specs from "@/apps/points/data/specs";
-import TableAdd from "@/components/TableAdd/TableAdd.vue";
-import columnLabels from "@/apps/points/data/columnLabels";
+import { v1 as uuidv1 } from "uuid";
+import api from "@/core/api";
+import { specs, specFields } from "@/view/pages/points/data/specs";
+import TableAdd from "@/view/content/TableAdd/TableAdd.vue";
 
 export default {
   components: { TableAdd },
+  computed: {
+    disabled() {
+      return false;
+    }
+  },
   data() {
     return {
+      point: {},
+      specs,
+
       columns: ["name", "unit", "quantity", "desc"],
       options: {
-        columnNames: columnLabels,
-      },
-      address: {},
-      act: {},
-      specs,
+        columnNames: specFields,
+        grid: [4, 2, 2, 3]
+      }
     };
   },
   methods: {
     onSave() {
-      const obj = {};
+      const specFieldKeys = Object.keys(specFields);
+      const tempspecFieldObj = {};
+      specFieldKeys.forEach(key => (tempspecFieldObj[key] = ""));
+
+      const items = [];
       const refs = this.$refs["tableAdd"];
       for (let i = 0; i < refs.length; i++) {
-        const field = this.specs[i].field;
-        obj[field] = refs[i].getResult();
+        const res = refs[i].getResult();
+        res.forEach(item => {
+          const quantity = item.quantity;
+          for (let idx = 1; idx <= quantity; idx++) {
+            const _item = Object.assign({}, item);
+            _item.quantity = 1;
+            const obj = Object.assign({}, tempspecFieldObj);
+            for (let key in _item) {
+              obj[key] = _item[key];
+            }
+            obj.id = uuidv1();
+            obj.type = this.specs[i].type;
+            obj.period = 1;
+            items.push(obj);
+          }
+        });
       }
 
+      this.point.data.scheme.items = items;
+
       api
-        .setSpecifications({
-          data: {
-            data: obj,
-            status: 100,
-          },
-          object_id: this.address.id,
-        })
-        .then((resp) => {
-          localStorage.setItem("spec", JSON.stringify(resp.data));
-          this.$router.push({ path: "/points/create/scheme" });
+        .putPoint(this.$route.params.id, this.point)
+        .then(() => {
+          const isCreateMode = this.$route.name.includes("Create");
+          if (!isCreateMode) return this.$router.push({ name: "points" });
+          this.$router.push({
+            name: "PointCreateScheme",
+            params: { id: this.$route.params.id }
+          });
         })
         .catch(() => alert("Ошибка сервера"));
     },
+    async setTableData(items) {
+      await this.$nextTick();
+      const refs = this.$refs["tableAdd"];
+
+      for (let i = 0; i < refs.length; i++) {
+        const catchedItems = items.filter(
+          item => item.type === this.specs[i].type
+        );
+
+        if (catchedItems.length) {
+          refs[i].setTableData(catchedItems);
+        } else {
+          refs[i].hide();
+        }
+      }
+    }
   },
-  beforeMount() {
-    this.address = JSON.parse(localStorage.getItem("address"));
-    this.act = JSON.parse(localStorage.getItem("act"));
-  },
+  created() {
+    api.getPoints().then(resp => {
+      this.point = resp.data.find(obj => obj.id === this.$route.params.id);
+      if (this.point.data.scheme.items.length) {
+        this.setTableData(this.point.data.scheme.items);
+      }
+    });
+  }
 };
 </script>
 

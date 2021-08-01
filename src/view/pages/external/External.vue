@@ -14,18 +14,18 @@ export default {
 
       api
         .getToken(id)
-        .then((resp) => {
+        .then(resp => {
           auth.setToken(resp.data.access_token);
           this.$router.push({ name: "home" });
         })
         .catch(() => {
           this.$router.push({ name: "login" });
         });
-    },
+    }
   },
   created() {
     this.checkToken();
-  },
+  }
 };
 </script>
 

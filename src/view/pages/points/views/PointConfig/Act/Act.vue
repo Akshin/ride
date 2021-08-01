@@ -1,143 +1,123 @@
 <template>
-  <div>
-    <v-card>
-      <v-card-title> Диктующая точка - {{ address.name }} </v-card-title>
-      <v-card-subtitle v-if="address.data">
-        Адрес - {{ address.data.value }}
-      </v-card-subtitle>
-      <v-divider />
-      <v-card-text>
-        <template v-for="(value, key, i) in actSorted">
-          <div :key="i" class="mb-10">
-            <h2 class="text-subtitle-1 font-weight-bold">
-              {{ key }}
-              <v-btn
-                v-if="i === 0"
-                color="secondary"
-                plain
-                small
-                @click="dialog = true"
+  <div class="card card-custom card-sticky" id="kt_page_sticky_card">
+    <div class="card-header" style="">
+      <div class="card-title">
+        <h3 class="card-label">
+          Акт обследования объекта <i class="mr-2"></i>
+          <small v-if="point.data"
+            >{{ point.name }} | {{ point.data.inspection.address }}</small
+          >
+        </h3>
+      </div>
+      <div class="card-toolbar">
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn btn-primary font-weight-bolder"
+            @click="onSave"
+            :disabled="disabled"
+          >
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" v-if="point.data">
+      <form class="form" id="kt_form">
+        <div
+          class="row"
+          v-for="(value, key, i) in actSorted"
+          :key="i"
+          v-show="value.length"
+        >
+          <div class="col-xl-2"></div>
+          <div class="col-xl-8">
+            <div class="my-5">
+              <h3 class="text-dark font-weight-bold mb-10">{{ key }}:</h3>
+              <div
+                class="form-group row"
+                v-for="(actField, i) in value"
+                :key="i"
               >
-                Добавить поле
-              </v-btn>
-            </h2>
-            <div class="input-wrapper" v-for="(actField, i) in value" :key="i">
-              <div>{{ actDict[actField] || actField }}</div>
-              <div>
-                <v-text-field
-                  v-model="act[actField]"
-                  hide-details="auto"
-                  :disabled="inputIsDisabled(actField)"
-                />
+                <label for="objectName" class="col-3 col-form-label">{{
+                  actDict[actField] || actField
+                }}</label>
+                <div class="col-9">
+                  <input
+                    class="form-control"
+                    type="text"
+                    v-model.trim="point.data.inspection[actField]"
+                    :disabled="inputIsDisabled(actField)"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </template>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-btn @click="onSave" color="primary" width="160" :disabled="disabled">
-          Далее
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-
-    <v-dialog v-model="dialog" max-width="600px">
-      <v-card>
-        <v-card-title> Введите название поля </v-card-title>
-        <v-card-text>
-          <v-text-field label="Поле" v-model="newField.key" />
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="addField">Добавить</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
-import api from "@/api";
+import api from "@/core/api";
+import { mapGetters } from "vuex";
 
 import {
-  act,
   actDict,
   actSorted,
-  disabledInputs,
-} from "@/apps/points/data/act";
-
-import getFullness from "@/utils/getFullness";
-import { mapGetters } from "vuex";
+  disabledInputs
+} from "@/view/pages/points/data/act";
 
 export default {
   data() {
     return {
-      act,
+      point: {},
       actDict,
       actSorted,
-      address: {},
-      dialog: false,
-
-      newField: {
-        key: "",
-        value: "",
-      },
+      disabledInputs
     };
   },
   computed: {
-    ...mapGetters({
-      profile: "core$common/user",
-    }),
+    ...mapGetters(["user"]),
     disabled() {
+      if (!this.point.data) return true;
       return (
-        !this.act.contactName ||
-        !this.act.contactPhone ||
-        !this.act.hotScheme ||
-        !this.act.hidroelevator
+        !this.point.data.inspection.contactName ||
+        !this.point.data.inspection.contactPhone ||
+        !this.point.data.inspection.hotScheme ||
+        !this.point.data.inspection.hotHidroelevator
       );
-    },
+    }
   },
   methods: {
     onSave() {
       if (this.disabled) return;
 
       api
-        .setInspections({
-          object_id: this.address.id,
-          data: {
-            data: this.act,
-            status: getFullness(this.act),
-          },
-        })
-        .then((resp) => {
-          localStorage.setItem("act", JSON.stringify(resp.data));
-          this.$router.push({ path: "/points/create/specification" });
+        .putPoint(this.$route.params.id, this.point)
+        .then(() => {
+          const isCreateMode = this.$route.name.includes("Create");
+          if (!isCreateMode) return this.$router.push({ name: "points" });
+          this.$router.push({
+            name: "PointCreateSpecification",
+            params: { id: this.$route.params.id }
+          });
         })
         .catch(() => alert("Ошибка сервера"));
     },
     inputIsDisabled(actField) {
       return disabledInputs.includes(actField);
-    },
-    addField() {
-      this.$set(
-        this.actSorted["ОБЩЕЕ"],
-        this.actSorted["ОБЩЕЕ"].length,
-        this.newField.key
-      );
-
-      this.newField.key = "";
-      this.dialog = false;
-    },
+    }
   },
-  mounted() {
-    this.address = JSON.parse(localStorage.getItem("address"));
-    this.act.date = new Date();
-    this.act.address = this.address.data.value;
-    this.act.addressName = this.address.name;
-
-    const profile = this.profile.data;
-    this.act.user = `${profile.email} ${profile.name} ${profile.name}`;
-  },
+  created() {
+    api.getPoints().then(resp => {
+      this.point = resp.data.find(obj => obj.id === this.$route.params.id);
+      const user = this.user.data;
+      this.point.data.inspection.contactName = `${user.name} ${user.last_name}`;
+      this.point.data.inspection.contactPhone = user.phone;
+    });
+  }
 };
 </script>
 

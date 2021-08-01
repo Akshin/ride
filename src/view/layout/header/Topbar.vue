@@ -103,26 +103,26 @@ export default {
   data() {
     return {
       languageFlag: "",
-      languages: i18nService.languages,
+      languages: i18nService.languages
     };
   },
   components: {
     KTDropdownNotification,
     KTDropdownQuickAction,
-    KTQuickUser,
+    KTQuickUser
     // KTQuickPanel,
   },
   methods: {
     onLanguageChanged() {
-      this.languageFlag = this.languages.find((val) => {
+      this.languageFlag = this.languages.find(val => {
         return val.lang === i18nService.getActiveLanguage();
       }).flag;
-    },
+    }
   },
   computed: {
     getLanguageFlag() {
       return this.onLanguageChanged();
-    },
-  },
+    }
+  }
 };
 </script>

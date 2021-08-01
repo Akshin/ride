@@ -1,3 +1,5 @@
+import routes from "@/view/pages/points/routes";
+
 export default [
   {
     path: "/",
@@ -8,41 +10,25 @@ export default [
       {
         path: "/",
         name: "home",
-        component: () => import("@/view/pages/home/Home.vue"),
+        component: () => import("@/view/pages/home/Home.vue")
       },
       {
         path: "/map",
         name: "map",
-        component: () => import("@/view/pages/map/Map.vue"),
+        component: () => import("@/view/pages/map/Map.vue")
       },
-      {
-        path: "/points",
-        name: "points",
-        component: () => import("@/view/pages/points/views/PointList/PointList"),
-      },
-      //   {
-      //     path: "/points/create",
-      //     name: "PointCreate",
-      //     component: () => import("@/view/pages/points/views/PointConfig/PointConfig"),
-      //     children: getChildRoutes(),
-      //   },
-      //   {
-      //     path: "/points/edit/:id",
-      //     name: "pointsEdit",
-      //     component: () => import("@/view/pages/points/views/PointEdit/PointEdit"),
-      //     children: getEditChildRoutes(),
-      //   },
+      ...routes
     ]
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import("@/view/pages/login/Login.vue"),
+    path: "/login",
+    name: "login",
+    component: () => import("@/view/pages/login/Login.vue")
   },
   {
     path: "/external",
     name: "external",
-    component: () => import("@/view/pages/external/External.vue"),
+    component: () => import("@/view/pages/external/External.vue")
   },
   {
     path: "/custom-error",

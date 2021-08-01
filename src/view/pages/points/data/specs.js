@@ -1,30 +1,43 @@
-export default [
+export const specs = [
   {
     title: "Теплоснабжение",
-    field: "hot",
+    type: "hot"
   },
   {
     title: "ГВС",
-    field: "gvs",
+    type: "gvs"
   },
   {
     title: "ХВС",
-    field: "hvs",
+    type: "hvs"
   },
   {
     title: "Мастер устройства",
-    field: "device",
+    type: "device"
   },
   {
     title: "Шкаф управления",
-    field: "controllerBox",
+    type: "controllerBox"
   },
   {
     title: "Электроэнергия",
-    field: "electroEnergy",
+    type: "electroEnergy"
   },
   {
     title: "Материалы для монтажа",
-    field: "materials",
-  },
+    type: "materials"
+  }
 ];
+
+export const specFields = {
+  id: "id",
+  pid: "pid",
+  name: "Наименование прибора",
+  unit: "Ед. изм.",
+  quantity: "Количество",
+  desc: "Примечание",
+  cipher: "Шифр",
+  serial: "Серийный номер",
+  period: "Периодичность",
+  type: "Тип"
+};

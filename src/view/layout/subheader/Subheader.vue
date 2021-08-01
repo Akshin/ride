@@ -85,7 +85,7 @@ export default {
   name: "KTSubheader",
   props: {
     breadcrumbs: Array,
-    title: String,
+    title: String
   },
   computed: {
     ...mapGetters(["layoutConfig"]),
@@ -112,7 +112,7 @@ export default {
         }
       }
       return classes.join(" ");
-    },
-  },
+    }
+  }
 };
 </script>

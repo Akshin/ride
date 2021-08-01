@@ -89,16 +89,16 @@ export default {
 
       newField: {
         key: "",
-        value: "",
+        value: ""
       },
 
-      readonly: true,
+      readonly: true
     };
   },
   computed: {
     ...mapGetters({
       profile: "core$common/user",
-      address: "points$points/address",
+      address: "points$points/address"
     }),
     disabled() {
       return (
@@ -108,7 +108,7 @@ export default {
         !this.data.data.data.hotScheme ||
         !this.data.data.data.hidroelevator
       );
-    },
+    }
   },
   methods: {
     onSave() {
@@ -136,13 +136,13 @@ export default {
 
       this.newField.key = "";
       this.dialog = false;
-    },
+    }
   },
   created() {
-    api.getInspections(this.$route.params.id).then((resp) => {
+    api.getInspections(this.$route.params.id).then(resp => {
       this.data = resp.data[0];
     });
-  },
+  }
 };
 </script>
 

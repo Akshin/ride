@@ -56,17 +56,17 @@ export default {
     return {
       columns: ["name", "unit", "quantity", "desc"],
       options: {
-        columnNames: columnLabels,
+        columnNames: columnLabels
       },
       specs,
       data: {},
-      readonly: true,
+      readonly: true
     };
   },
   computed: {
     ...mapGetters({
-      address: "points$points/address",
-    }),
+      address: "points$points/address"
+    })
   },
   methods: {
     onSave() {
@@ -82,10 +82,10 @@ export default {
           this.$router.push({ name: "points" });
         })
         .catch(() => alert("Ошибка сервера"));
-    },
+    }
   },
   created() {
-    api.getSpecifications(this.$route.params.id).then((resp) => {
+    api.getSpecifications(this.$route.params.id).then(resp => {
       this.data = resp.data[0];
 
       const refs = this.$refs["tableAdd"];
@@ -94,7 +94,7 @@ export default {
         refs[i].setTableData(this.data.data.data[field]);
       }
     });
-  },
+  }
 };
 </script>
 

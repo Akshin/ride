@@ -1,21 +1,15 @@
 <template>
   <div>
     <v-card>
-      <div id="sss"></div>
-      <v-card-text>
-        <v-file-input
-          accept="image/*"
-          label="Загрузите схему"
-          @change="uploadFile"
-          :disabled="readonly"
-        ></v-file-input>
-        <v-img :src="image" max-width="800"></v-img>
-      </v-card-text>
-
+      <v-card-title> Диктующая точка - {{ address.name }} </v-card-title>
+      <v-card-subtitle v-if="address.data">
+        Адрес - {{ address.data.value }}
+      </v-card-subtitle>
+      <v-divider />
       <template v-if="data.data && data.data.data">
         <v-card-text
-          v-for="(value, key) in data.data.data"
-          :key="key"
+          v-for="(value, key, i) in data.data.data"
+          :key="i"
           class="mb-2"
           v-show="isShowenField(key)"
         >
@@ -32,13 +26,12 @@
               <tbody>
                 <tr v-for="(data, i) in value" :key="i">
                   <td v-for="(col, idx) in columns" :key="idx">
-                    <span v-if="col !== 'cipher' && col !== 'serial'">{{
-                      data[col]
-                    }}</span>
+                    <span v-if="col !== 'period'">{{ data[col] }}</span>
                     <v-text-field
                       v-else
                       v-model="data[col]"
                       hide-details="auto"
+                      type="number"
                       :disabled="readonly"
                     />
                   </td>
@@ -50,8 +43,8 @@
       </template>
 
       <v-card-actions>
-        <v-btn @click="onSave" color="primary" width="160" :disabled="disabled">
-          Сохранить
+        <v-btn @click="onSave" color="primary" width="160" :disabled="readonly">
+          Далее
         </v-btn>
       </v-card-actions>
 
@@ -83,76 +76,50 @@ export default {
   data() {
     return {
       specs,
-      columns: ["name", "unit", "quantity", "desc", "cipher", "serial"],
+      columns: [
+        "name",
+        "unit",
+        "quantity",
+        "desc",
+        "cipher",
+        "serial",
+        "period"
+      ],
       columnLabels,
       data: {},
-      image: "",
-      imageLink: "",
       readonly: true,
-
-      showenFields: specs.slice(0, 3),
+      showenFields: specs.slice(0, 3)
     };
   },
   computed: {
-    disabled() {
-      if (this.readonly || this.loading) return true;
-
-      // for (let key in this.spec) {
-      //   const fullfill = this.spec[key].every((el) => el.cipher && el.serial);
-      //   if (!fullfill) return true;
-      // }
-
-      return false;
-    },
     ...mapGetters({
-      address: "points$points/address",
-    }),
+      address: "points$points/address"
+    })
   },
   methods: {
     isShowenField(key) {
-      return this.showenFields.some((el) => el.field === key);
-    },
-    uploadFile(file) {
-      if (!file) {
-        this.image = "";
-        this.imageLink = "";
-        return;
-      }
-      this.image = URL.createObjectURL(file);
-      const formData = new FormData();
-      formData.append("uploaded_file", file);
-      this.loading = true;
-      api
-        .uploadFile(formData)
-        .then((resp) => {
-          this.imageLink = resp.data.file;
-        })
-        .finally(() => (this.loading = false));
+      return this.showenFields.some(el => el.field === key);
     },
     onSave() {
-      this.data.data.image = this.imageLink;
-
       api
-        .putSensorSchemes(this.data.id, this.data)
+        .putConfigurations(this.data.id, this.data)
         .then(() => {
           this.$router.push({ name: "points" });
         })
         .catch(() => alert("Ошибка сервера"));
     },
-    getColumnLabel(col) {
-      return this.columnLabels[col];
+    getColumnLabel(key) {
+      return this.columnLabels[key];
     },
     getSpecName(key) {
-      return this.specs.find((spec) => spec.field === key)?.title;
-    },
+      return this.specs.find(spec => spec.field === key).title;
+    }
   },
   created() {
-    api.getSensorSchemes(this.$route.params.id).then((resp) => {
+    api.getConfigurations(this.$route.params.id).then(resp => {
       this.data = resp.data[0];
-      const filename = this.data.data.image;
-      this.image = api.getFile(filename);
     });
-  },
+  }
 };
 </script>
 

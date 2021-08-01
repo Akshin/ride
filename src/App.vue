@@ -1,5 +1,7 @@
 <template>
-  <router-view></router-view>
+  <v-app>
+    <router-view></router-view>
+  </v-app>
 </template>
 
 <style lang="scss">
@@ -36,3 +38,10 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.v-application {
+  background: transparent !important;
+  font-family: Poppins, Helvetica, "sans-serif" !important;
+}
+</style>

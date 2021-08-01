@@ -2,23 +2,23 @@ import api from "@/core/api";
 import ru from "@/core/locale/ru";
 
 const state = {
-  user: {},
+  user: {}
 };
 
 const getters = {
-  user: (state) => state.user,
-  getUserRoles: (state) => {
+  user: state => state.user,
+  getUserRoles: state => {
     if (!state.user.data) return [];
     return state.user.data.role;
   },
   getUserRoleNames: (state, getters) => {
     return getters.getUserRoles.reduce((acc, role, i, arr) => {
       let str = acc + ru[role.name];
-      if (i + 1 !== arr.length) str += ', ';
+      if (i + 1 !== arr.length) str += ", ";
       return str;
-    }, '')
+    }, "");
   },
-  userRoleIs: (state) => (role) => {
+  userRoleIs: state => role => {
     return state.getUserRoles.includes(role);
   }
 };
@@ -34,16 +34,16 @@ const actions = {
     } catch (error) {
       console.error(error);
     }
-  },
+  }
 };
 
 const mutations = {
-  setUser: (state, user) => (state.user = user),
+  setUser: (state, user) => (state.user = user)
 };
 
 export default {
   state,
   getters,
   actions,
-  mutations,
+  mutations
 };

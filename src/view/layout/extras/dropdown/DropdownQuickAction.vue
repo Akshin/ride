@@ -71,7 +71,7 @@ export default {
   name: "KTDropdownQuickAction",
   data() {
     return {
-      ru,
+      ru
     };
   },
   computed: {
@@ -85,7 +85,7 @@ export default {
 
     backgroundImage() {
       return process.env.BASE_URL + "media/misc/bg-1.jpg";
-    },
-  },
+    }
+  }
 };
 </script>

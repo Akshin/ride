@@ -36,59 +36,28 @@ export default {
   },
 
   getAddressAutocomplete(query) {
-    const path = `${URL_ZKH}/address_autocomplete/`;
+    const path = `${URL_ZKH}/address_autocomplete`;
     return this.post(path, { query });
   },
 
   // points
 
-  getObjects(object_id = "") {
-    const path = `${URL_ZKH}/objects/?object_id=${object_id}/`;
+  getPoints(pointId) {
+    let path = `${URL_ZKH}/objects`;
+    if (pointId) {
+      path += `?object_id=${pointId}`;
+    }
     return this.get(path);
   },
 
-  setObjects(point) {
-    const path = `${URL_ZKH}/objects/`;
+  setPoint(point) {
+    const path = `${URL_ZKH}/objects`;
     return this.post(path, point);
   },
 
-  putObjects(id, point) {
+  putPoint(id, point) {
     const path = `${URL_ZKH}/objects/${id}`;
     return this.put(path, point);
-  },
-
-  // inspections
-
-  getInspections(object_id = "") {
-    const path = `${URL_ZKH}/inspections/?object_id=${object_id}`;
-    return this.get(path);
-  },
-
-  setInspections(payload) {
-    const path = `${URL_ZKH}/inspections/`;
-    return this.post(path, payload);
-  },
-
-  putInspections(id, payload) {
-    const path = `${URL_ZKH}/inspections/${id}`;
-    return this.put(path, payload);
-  },
-
-  // sensor_schemes
-
-  getSensorSchemes(object_id = "") {
-    const path = `${URL_ZKH}/sensor_schemes/?object_id=${object_id}`;
-    return this.get(path);
-  },
-
-  setSensorSchemes(payload) {
-    const path = `${URL_ZKH}/sensor_schemes/`;
-    return this.post(path, payload);
-  },
-
-  putSensorSchemes(id, payload) {
-    const path = `${URL_ZKH}/sensor_schemes/${id}`;
-    return this.put(path, payload);
   },
 
   uploadFile(payload) {
@@ -98,57 +67,100 @@ export default {
 
   getFile(filename) {
     return `${URL_ZKH}/files/get_file?filename=${filename}`;
-    // return this.get(path);
-  },
+  }
 
-  // specifications
+  // // inspections
 
-  getSpecifications(object_id = "") {
-    const path = `${URL_ZKH}/specifications/?object_id=${object_id}`;
-    return this.get(path);
-  },
+  // getInspections(object_id = "") {
+  //   const path = `${URL_ZKH}/inspections/?object_id=${object_id}`;
+  //   return this.get(path);
+  // },
 
-  setSpecifications(payload) {
-    const path = `${URL_ZKH}/specifications/`;
-    return this.post(path, payload);
-  },
+  // setInspections(payload) {
+  //   const path = `${URL_ZKH}/inspections/`;
+  //   return this.post(path, payload);
+  // },
 
-  putSpecifications(id, payload) {
-    const path = `${URL_ZKH}/specifications/${id}`;
-    return this.put(path, payload);
-  },
+  // putInspections(id, payload) {
+  //   const path = `${URL_ZKH}/inspections/${id}`;
+  //   return this.put(path, payload);
+  // },
 
-  // configurations
+  // // sensor_schemes
 
-  getConfigurations(object_id = "") {
-    const path = `${URL_ZKH}/configurations/?object_id=${object_id}`;
-    return this.get(path);
-  },
+  // getSensorSchemes(object_id = "") {
+  //   const path = `${URL_ZKH}/sensor_schemes/?object_id=${object_id}`;
+  //   return this.get(path);
+  // },
 
-  setConfigurations(payload) {
-    const path = `${URL_ZKH}/configurations/`;
-    return this.post(path, payload);
-  },
+  // setSensorSchemes(payload) {
+  //   const path = `${URL_ZKH}/sensor_schemes/`;
+  //   return this.post(path, payload);
+  // },
 
-  putConfigurations(id, payload) {
-    const path = `${URL_ZKH}/configurations/${id}`;
-    return this.put(path, payload);
-  },
+  // putSensorSchemes(id, payload) {
+  //   const path = `${URL_ZKH}/sensor_schemes/${id}`;
+  //   return this.put(path, payload);
+  // },
 
-  // equipments
+  // uploadFile(payload) {
+  //   const path = `${URL_ZKH}/files/upload_file`;
+  //   return this.post(path, payload, true);
+  // },
 
-  getEquipments(object_id = "") {
-    const path = `${URL_ZKH}/equipments/?object_id=${object_id}/`;
-    return this.get(path);
-  },
+  // getFile(filename) {
+  //   return `${URL_ZKH}/files/get_file?filename=${filename}`;
+  //   // return this.get(path);
+  // },
 
-  setEquipments(payload) {
-    const path = `${URL_ZKH}/equipments/`;
-    return this.post(path, payload);
-  },
+  // // specifications
 
-  putEquipments(id, payload) {
-    const path = `${URL_ZKH}/equipments/${id}/`;
-    return this.put(path, payload);
-  },
+  // getSpecifications(object_id = "") {
+  //   const path = `${URL_ZKH}/specifications/?object_id=${object_id}`;
+  //   return this.get(path);
+  // },
+
+  // setSpecifications(payload) {
+  //   const path = `${URL_ZKH}/specifications/`;
+  //   return this.post(path, payload);
+  // },
+
+  // putSpecifications(id, payload) {
+  //   const path = `${URL_ZKH}/specifications/${id}`;
+  //   return this.put(path, payload);
+  // },
+
+  // // configurations
+
+  // getConfigurations(object_id = "") {
+  //   const path = `${URL_ZKH}/configurations/?object_id=${object_id}`;
+  //   return this.get(path);
+  // },
+
+  // setConfigurations(payload) {
+  //   const path = `${URL_ZKH}/configurations/`;
+  //   return this.post(path, payload);
+  // },
+
+  // putConfigurations(id, payload) {
+  //   const path = `${URL_ZKH}/configurations/${id}`;
+  //   return this.put(path, payload);
+  // },
+
+  // // equipments
+
+  // getEquipments(object_id = "") {
+  //   const path = `${URL_ZKH}/equipments/?object_id=${object_id}/`;
+  //   return this.get(path);
+  // },
+
+  // setEquipments(payload) {
+  //   const path = `${URL_ZKH}/equipments/`;
+  //   return this.post(path, payload);
+  // },
+
+  // putEquipments(id, payload) {
+  //   const path = `${URL_ZKH}/equipments/${id}/`;
+  //   return this.put(path, payload);
+  // }
 };

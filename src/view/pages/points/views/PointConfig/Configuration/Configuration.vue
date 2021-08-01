@@ -1,123 +1,104 @@
 <template>
-  <div>
-    <v-card>
-      <v-card-title> Диктующая точка - {{ address.name }} </v-card-title>
-      <v-card-subtitle v-if="address.data">
-        Адрес - {{ address.data.value }}
-      </v-card-subtitle>
-      <v-divider />
-      <v-card-text
-        v-for="(value, key, i) in scheme"
-        :key="i"
-        class="mb-2"
-        v-show="isShowenField(key)"
-      >
-        <h3 class="text-h6 mb-4">{{ getSpecName(key) }}</h3>
-        <v-simple-table>
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th v-for="(col, i) in columns" :key="i" class="text-left">
-                  {{ getColumnLabel(col) }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(data, i) in value" :key="i">
-                <td v-for="(col, idx) in columns" :key="idx">
-                  <span v-if="col !== 'period'">{{ data[col] }}</span>
-                  <v-text-field
-                    v-else
-                    v-model="data[col]"
-                    hide-details="auto"
-                    type="number"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn @click="onSave" color="primary" width="160"> Далее </v-btn>
-      </v-card-actions>
-    </v-card>
+  <div class="card card-custom card-sticky" id="kt_page_sticky_card">
+    <div class="card-header" style="">
+      <div class="card-title">
+        <h3 class="card-label">
+          Конфигурация <i class="mr-2"></i>
+          <small v-if="point.data"
+            >{{ point.name }} | {{ point.data.inspection.address }}</small
+          >
+        </h3>
+      </div>
+      <div class="card-toolbar">
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn btn-success font-weight-bolder"
+            @click="onSave"
+          >
+            Закончить
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" v-if="point.data">
+      <div v-for="(spec, i) in specs" :key="i">
+        <TableAdd
+          :options="options"
+          :columns="columns"
+          :title="spec.title"
+          ref="tableAdd"
+          readonly
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import api from "@/api";
-import specs from "@/apps/points/data/specs";
-import columnLabels from "@/apps/points/data/columnLabels";
+import api from "@/core/api";
+import TableAdd from "@/view/content/TableAdd/TableAdd.vue";
+
+import { specs, specFields } from "@/view/pages/points/data/specs";
 
 export default {
+  components: { TableAdd },
   data() {
     return {
-      scheme: {},
-      address: {},
+      point: {},
       specs,
-      columns: [
-        "name",
-        "unit",
-        "quantity",
-        "desc",
-        "cipher",
-        "serial",
-        "period",
-      ],
-      columnLabels,
-      showenFields: specs.slice(0, 3),
+
+      columns: ["name", "desc", "cipher", "serial", "period"],
+      options: {
+        columnNames: specFields,
+        grid: [3, 2, 2, 3, 2],
+        disabled: [true, true, true, true, false]
+      }
     };
   },
   methods: {
-    isShowenField(key) {
-      return this.showenFields.some((el) => el.field === key);
-    },
-    getStatus() {
-      return (
-        (JSON.parse(localStorage.getItem("scheme")).data.status +
-          JSON.parse(localStorage.getItem("act")).data.status +
-          JSON.parse(localStorage.getItem("spec")).data.status) /
-        3
-      );
-    },
     onSave() {
+      const items = [];
+      const refs = this.$refs["tableAdd"];
+      for (let i = 0; i < refs.length; i++) {
+        const res = refs[i].getResult();
+        res.forEach(item => items.push(item));
+      }
+
+      this.point.data.scheme.items = items;
+
       api
-        .setConfigurations({
-          data: {
-            data: this.scheme,
-            status: this.getStatus(),
-          },
-          object_id: this.address.id,
-        })
+        .putPoint(this.$route.params.id, this.point)
         .then(() => {
-          localStorage.removeItem("scheme");
-          localStorage.removeItem("act");
-          localStorage.removeItem("address");
-          localStorage.removeItem("spec");
-          this.$router.push({ name: "points" });
+          this.$router.push({
+            name: "points"
+          });
         })
         .catch(() => alert("Ошибка сервера"));
     },
-    getColumnLabel(key) {
-      return this.columnLabels[key];
-    },
-    getSpecName(key) {
-      return this.specs.find((spec) => spec.field === key).title;
-    },
-  },
-  beforeMount() {
-    this.address = JSON.parse(localStorage.getItem("address"));
-    const scheme = JSON.parse(localStorage.getItem("scheme")).data.data;
+    async setTableData(items) {
+      await this.$nextTick();
+      const refs = this.$refs["tableAdd"];
 
-    for (let key in scheme) {
-      if (scheme[key].length) {
-        scheme[key].forEach((row, i) => (scheme[key][i]["period"] = 1));
+      for (let i = 0; i < refs.length; i++) {
+        const catchedItems = items.filter(
+          item => item.type === this.specs[i].type
+        );
+
+        if (catchedItems.length) {
+          refs[i].setTableData(catchedItems);
+        } else {
+          refs[i].hide();
+        }
       }
     }
-
-    this.scheme = scheme;
   },
+  mounted() {
+    api.getPoints().then(resp => {
+      this.point = resp.data.find(obj => obj.id === this.$route.params.id);
+      this.setTableData(this.point.data.scheme.items);
+    });
+  }
 };
 </script>
 

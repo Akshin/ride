@@ -24,7 +24,7 @@
 export default {
   data() {
     return {
-      breadcrumbs: [],
+      breadcrumbs: []
     };
   },
   watch: {
@@ -33,11 +33,10 @@ export default {
         console.log(val);
       },
       deep: true,
-      immediate: true,
-    },
-  },
+      immediate: true
+    }
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>

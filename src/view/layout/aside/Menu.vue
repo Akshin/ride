@@ -10,7 +10,7 @@
         class="menu-item"
         :class="[
           isActive && 'menu-item-active',
-          isExactActive && 'menu-item-active',
+          isExactActive && 'menu-item-active'
         ]"
       >
         <a :href="href" class="menu-link" @click="navigate">
@@ -27,7 +27,7 @@
         class="menu-item"
         :class="[
           isActive && 'menu-item-active',
-          isExactActive && 'menu-item-active',
+          isExactActive && 'menu-item-active'
         ]"
       >
         <a :href="href" class="menu-link" @click="navigate">
@@ -47,7 +47,7 @@
       data-menu-toggle="hover"
       class="menu-item menu-item-submenu"
       v-bind:class="{
-        'menu-item-open': hasActiveChildren('/profile'),
+        'menu-item-open': hasActiveChildren('/profile')
       }"
     >
       <a href="#" class="menu-link menu-toggle">
@@ -68,7 +68,7 @@
               class="menu-item"
               :class="[
                 isActive && 'menu-item-active',
-                isExactActive && 'menu-item-active',
+                isExactActive && 'menu-item-active'
               ]"
             >
               <a :href="href" class="menu-link" @click="navigate">
@@ -79,7 +79,7 @@
           </router-link>
 
           <router-link
-            :to="{ name: 'PointAddress' }"
+            :to="{ name: 'PointCreateAddress', params: { id: 'new' } }"
             v-slot="{ href, navigate, isActive, isExactActive }"
           >
             <li
@@ -88,7 +88,7 @@
               class="menu-item"
               :class="[
                 isActive && 'menu-item-active',
-                isExactActive && 'menu-item-active',
+                isExactActive && 'menu-item-active'
               ]"
             >
               <a :href="href" class="menu-link" @click="navigate">
@@ -109,7 +109,7 @@ export default {
   methods: {
     hasActiveChildren(match) {
       return this.$route["path"].indexOf(match) !== -1;
-    },
-  },
+    }
+  }
 };
 </script>

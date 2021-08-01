@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuetify from "vuetify/lib/framework";
+import ru from "vuetify/lib/locale/ru";
 
 Vue.use(Vuetify);
 
@@ -10,7 +11,7 @@ export default new Vuetify({
     },
     themes: {
       light: {
-        primary: "#5867dd",
+        primary: "#3699FF",
         secondary: "#e8ecfa",
         accent: "#5d78ff",
         error: "#fd397a",
@@ -19,5 +20,9 @@ export default new Vuetify({
         warning: "#ffb822"
       }
     }
+  },
+  lang: {
+    locales: { ru },
+    current: "ru"
   }
 });

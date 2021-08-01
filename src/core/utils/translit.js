@@ -28,10 +28,10 @@ const ru = {
   ы: "y",
   э: "e",
   ю: "u",
-  я: "ya",
+  я: "ya"
 };
 
-export default function (str) {
+export default function(str) {
   let n_str = [];
 
   str = str.replace(/[ъь]+/g, "").replace(/й/g, "i");

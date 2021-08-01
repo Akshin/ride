@@ -42,7 +42,7 @@ import KTLayoutHeaderMenu from "@/assets/js/layout/base/header-menu.js";
 export default {
   name: "KTHeader",
   components: {
-    KTTopbar,
+    KTTopbar
     // KTMenu
   },
   mounted() {
@@ -57,7 +57,7 @@ export default {
 
     const headerRef = this.$refs["kt_header"];
 
-    headerRef.querySelectorAll("a[class='menu-link']").forEach((item) => {
+    headerRef.querySelectorAll("a[class='menu-link']").forEach(item => {
       item.addEventListener("click", () => {
         KTLayoutHeaderMenu.getOffcanvas().hide();
       });
@@ -96,7 +96,7 @@ export default {
         return classes.join(" ");
       }
       return null;
-    },
-  },
+    }
+  }
 };
 </script>
