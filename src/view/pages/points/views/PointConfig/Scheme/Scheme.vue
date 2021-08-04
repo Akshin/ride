@@ -28,13 +28,14 @@
         label="Загрузите схему"
         @change="uploadFile"
       ></v-file-input>
-      <v-img :src="image" max-width="800"></v-img>
+      <v-img :src="image"></v-img>
 
       <div v-for="(spec, i) in specs" :key="i">
         <TableAdd
           :options="options"
           :columns="columns"
           :title="spec.title"
+          :masters="masters"
           ref="tableAdd"
           readonly
         />
@@ -59,7 +60,7 @@ export default {
       columns: ["name", "desc", "cipher", "serial"],
       options: {
         columnNames: specFields,
-        grid: [3, 3, 3, 3],
+        grid: [3, 2, 2, 3],
         disabled: [true, true, false, false]
       },
 
@@ -72,6 +73,12 @@ export default {
     disabled() {
       if (this.loading) return true;
       return false;
+    },
+    masters() {
+      if (!this.point.data) return [];
+      return this.point.data.scheme.items.filter(
+        item => item.type === "device"
+      );
     }
   },
   methods: {
@@ -121,7 +128,7 @@ export default {
 
       for (let i = 0; i < refs.length; i++) {
         const catchedItems = items.filter(
-          item => item.type === this.specs[i].type
+          item => item.subtype === this.specs[i].subtype
         );
 
         if (catchedItems.length) {

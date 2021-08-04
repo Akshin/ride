@@ -4,6 +4,7 @@ import router from "./core/router";
 import store from "@/core/services/store";
 
 Vue.config.productionTip = false;
+import "@/core/plugins/inline-svg";
 
 // Global 3rd party plugins
 import "popper.js";
@@ -20,7 +21,6 @@ import "@/core/plugins/portal-vue";
 import "@/core/plugins/bootstrap-vue";
 import "@/core/plugins/perfect-scrollbar";
 import "@/core/plugins/highlight-js";
-import "@/core/plugins/inline-svg";
 import "@/core/plugins/apexcharts";
 import "@/core/plugins/treeselect";
 import "@/core/plugins/metronic";

@@ -81,6 +81,7 @@ export default {
             }
             obj.id = uuidv1();
             obj.type = this.specs[i].type;
+            obj.subtype = this.specs[i].subtype;
             obj.period = 1;
             items.push(obj);
           }
@@ -107,13 +108,11 @@ export default {
 
       for (let i = 0; i < refs.length; i++) {
         const catchedItems = items.filter(
-          item => item.type === this.specs[i].type
+          item => item.subtype === this.specs[i].subtype
         );
 
         if (catchedItems.length) {
           refs[i].setTableData(catchedItems);
-        } else {
-          refs[i].hide();
         }
       }
     }

@@ -24,8 +24,8 @@ export default {
     return axios.put(path, payload, auth.getHeaders());
   },
 
-  delete(path, payload) {
-    return axios.delete(path, payload, auth.getHeaders());
+  delete(path) {
+    return axios.delete(path, auth.getHeaders());
   },
 
   ///////////////////////////////////////////////////////
@@ -58,6 +58,11 @@ export default {
   putPoint(id, point) {
     const path = `${URL_ZKH}/objects/${id}`;
     return this.put(path, point);
+  },
+
+  deletePoint(id) {
+    const path = `${URL_ZKH}/objects/${id}`;
+    return this.delete(path);
   },
 
   uploadFile(payload) {

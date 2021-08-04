@@ -82,7 +82,7 @@ export default {
 
       for (let i = 0; i < refs.length; i++) {
         const catchedItems = items.filter(
-          item => item.type === this.specs[i].type
+          item => item.subtype === this.specs[i].subtype
         );
 
         if (catchedItems.length) {

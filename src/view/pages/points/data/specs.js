@@ -1,31 +1,38 @@
 export const specs = [
   {
     title: "Теплоснабжение",
-    type: "hot"
+    subtype: "hot",
+    type: "sensor"
   },
   {
     title: "ГВС",
-    type: "gvs"
+    subtype: "gvs",
+    type: "sensor"
   },
   {
     title: "ХВС",
-    type: "hvs"
+    subtype: "hvs",
+    type: "sensor"
   },
   {
     title: "Мастер устройства",
+    subtype: "device",
     type: "device"
   },
   {
     title: "Шкаф управления",
-    type: "controllerBox"
+    subtype: "controllerBox",
+    type: "equipment"
   },
   {
     title: "Электроэнергия",
-    type: "electroEnergy"
+    subtype: "electroEnergy",
+    type: "sensor"
   },
   {
     title: "Материалы для монтажа",
-    type: "materials"
+    subtype: "supply",
+    type: "sensor"
   }
 ];
 
@@ -39,5 +46,6 @@ export const specFields = {
   cipher: "Шифр",
   serial: "Серийный номер",
   period: "Периодичность",
-  type: "Тип"
+  type: "Тип",
+  subType: "Подтип"
 };

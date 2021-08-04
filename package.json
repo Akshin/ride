@@ -73,7 +73,14 @@
             "plugin:vue/essential",
             "eslint:recommended"
         ],
-        "rules": [],
+        "rules": [
+            {
+                "vue/max-len": ["error", {
+                    "code": 500,
+                    "template": 500
+                }]
+            }
+        ],
         "parserOptions": {
             "parser": "babel-eslint"
         }

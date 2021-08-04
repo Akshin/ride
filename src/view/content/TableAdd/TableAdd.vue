@@ -45,16 +45,15 @@
           >
             <div class="form-group">
               <label v-if="idx === 0">{{ getColumnLabel(col) }}</label>
-              <select
+              <!-- <select
                 class="form-control form-control-solid"
                 v-if="col === 'unit'"
                 v-model="data[col]"
               >
-                <option selected>шт.</option>
-                <option>м.</option>
-              </select>
+                <option selected value="шт.">шт.</option>
+                <option value="м.">м.</option>
+              </select> -->
               <input
-                v-else
                 :type="
                   col === 'quantity' || col === 'period' ? 'number' : 'text'
                 "
@@ -65,8 +64,22 @@
               />
             </div>
           </div>
+          <div class="col-xl-2" v-if="masters.length && data.type !== 'device'">
+            <label v-if="idx === 0"> Мастер устройств </label>
+            <select class="form-control form-control-solid" v-model="data.pid">
+              <option
+                v-for="(master, k) in masters"
+                :key="k"
+                :value="master.id"
+              >
+                {{ master.name }}
+                ({{ master.desc }})
+                {{ master.serial ? " - " + master.serial : "" }}
+              </option>
+            </select>
+          </div>
           <div class="col-xl-1" @click="handleDelete(i)" v-if="!readonly">
-            <label>Удалить</label>
+            <label v-if="idx === 0">Удалить</label>
             <a class="btn btn-icon btn-light btn-hover-primary">
               <span class="svg-icon svg-icon-md svg-icon-primary">
                 <svg
@@ -124,6 +137,10 @@ export default {
     readonly: {
       type: Boolean,
       default: false
+    },
+    masters: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -156,8 +173,21 @@ export default {
   },
   created() {
     const dataStructure = {};
-    this.columns.forEach(col => (dataStructure[col] = ""));
+    this.columns.forEach(col => {
+      dataStructure[col] = "";
+      // if (col === "unit") dataStructure[col] = "шт.";
+    });
     this._dataStructure = dataStructure;
+  },
+  async mounted() {
+    await this.$nextTick();
+    if (!this.masters.length) return;
+
+    this.tableData.forEach((el, i, arr) => {
+      if (el.type !== "device" && !el.pid) {
+        arr[i].pid = this.masters[0].id;
+      }
+    });
   }
 };
 </script>

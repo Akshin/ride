@@ -85,7 +85,9 @@ export default {
       });
     },
     deleteItem(item) {
-      console.log(item);
+      api.deletePoint(item.id).finally(() => {
+        this.init();
+      });
     }
   },
   beforeMount() {

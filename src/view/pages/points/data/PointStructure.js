@@ -8,5 +8,6 @@ export const pointData = {
   },
   address: {}, // fias
   inspection: act,
+  inspectionTitles: null,
   createdAt: null
 };
